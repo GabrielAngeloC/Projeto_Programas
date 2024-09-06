@@ -18,13 +18,14 @@ class ProgramaService {
     }
   }
 
-  Future<void> addPrograma(String nome, String dtInicio, String dtFim, bool status) async {
+  Future<void> addPrograma(int id, String nome, String dtInicio, String dtFim, String status) async {
     final response = await http.post(
-      Uri.http(baseUrl, "/adicionar"),
+      Uri.http("$baseUrl/cadastrar"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, dynamic>{
+        'gerete_id': id,
         'nome': nome,
         'dtInicio': dtInicio,
         'dtFim': dtFim,
@@ -38,7 +39,7 @@ class ProgramaService {
   }
 
   Future<void> updatePrograma(
-      int id, String nome, String dtInicio, String dtFim, bool status) async {
+      int id, String nome, String dtInicio, String dtFim, String status) async {
     final response = await http.put(
       Uri.parse(
           '$baseUrl/atualizar/$id'),

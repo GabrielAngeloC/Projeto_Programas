@@ -5,7 +5,7 @@ class Programa{
   String? nome;
   String? dtInicio;
   String? dtFim;
-  bool? status;
+  String? status;
 
 
   Programa({this.gerenteId, this.nome, this.dtInicio, this.dtFim, this.status});

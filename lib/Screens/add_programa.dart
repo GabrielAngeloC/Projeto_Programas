@@ -1,19 +1,34 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print, prefer_const_constructors
+// ignore_for_file: use_build_context_synchronously, avoid_print, prefer_const_constructors, prefer_const_constructors_in_immutables, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:projeto_programas/Services/programa_service.dart';
 
-class AddPrograma extends StatelessWidget {
+class AddPrograma extends StatefulWidget {
   AddPrograma({super.key});
 
+  @override
+  _AddProgramaState createState() => _AddProgramaState();
+}
+
+class _AddProgramaState extends State<AddPrograma> {
   final gerenteController = TextEditingController();
   final nomeController = TextEditingController();
   final dtInicioController = TextEditingController();
   final dtFimController = TextEditingController();
-  final statusController = ValueNotifier<bool>(false);
+  String status = '0';
 
   final ProgramaService apiService = GetIt.I<ProgramaService>();
+
+  bool _validateFields() {
+    if (gerenteController.text.isEmpty ||
+        nomeController.text.isEmpty ||
+        dtInicioController.text.isEmpty ||
+        dtFimController.text.isEmpty) {
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +40,9 @@ class AddPrograma extends StatelessWidget {
           children: [
             TextFormField(
               decoration: const InputDecoration(
-                icon: Icon(Icons.assignment),
+                icon: Icon(Icons.card_membership),
                 hintText: 'Id do Gerente',
-                labelText: 'Digite aqui',
+                labelText: 'Id do Gerente',
               ),
               controller: gerenteController,
             ),
@@ -35,7 +50,7 @@ class AddPrograma extends StatelessWidget {
               decoration: const InputDecoration(
                 icon: Icon(Icons.assignment),
                 hintText: 'Nome do Programa:',
-                labelText: 'Digite aqui',
+                labelText: 'Nome do Programa',
               ),
               controller: nomeController,
             ),
@@ -43,7 +58,7 @@ class AddPrograma extends StatelessWidget {
               decoration: const InputDecoration(
                 icon: Icon(Icons.date_range),
                 hintText: 'Data de Início:',
-                labelText: 'Digite aqui',
+                labelText: 'Data de Início',
               ),
               controller: dtInicioController,
             ),
@@ -51,41 +66,53 @@ class AddPrograma extends StatelessWidget {
               decoration: const InputDecoration(
                 icon: Icon(Icons.date_range),
                 hintText: 'Data de Fim:',
-                labelText: 'Digite aqui',
+                labelText: 'Data de Fim',
               ),
               controller: dtFimController,
             ),
-            ValueListenableBuilder<bool>(
-              valueListenable: statusController,
-              builder: (context, status, child) {
-                return Row(
-                  children: [
-                    Text("Programa Finalizado?"),
-                    Checkbox(
-                      value: status,
-                      onChanged: (bool? newValue) {
-                        statusController.value = newValue ?? false;
-                      },
-                    ),
-                  ],
-                );
-              },
+            SizedBox(
+              width: double.infinity,
+              child: DropdownButton<String>(
+                value: status,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    status = newValue!;
+                  });
+                },
+                items: <String>['Inativo', 'Ativo']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value == 'Inativo' ? '0' : '1',
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
             ),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 child: const Text("Adicionar"),
                 onPressed: () async {
-                  try {
-                    await apiService.addPrograma(
-                      nomeController.text,
-                      dtInicioController.text,
-                      dtFimController.text,
-                      statusController.value,
+                  if (_validateFields()) {
+                    try {
+                      await apiService.addPrograma(
+                        int.parse(gerenteController.text),
+                        nomeController.text,
+                        dtInicioController.text,
+                        dtFimController.text,
+                        status,
+                      );
+                      Navigator.pop(context);
+                    } catch (e) {
+                      print('Erro ao adicionar programa: $e');
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Por favor, preencha todos os campos.'),
+                        backgroundColor: Colors.red,
+                      ),
                     );
-                    Navigator.pop(context);
-                  } catch (e) {
-                    print('Erro ao adicionar programa: $e');
                   }
                 },
               ),

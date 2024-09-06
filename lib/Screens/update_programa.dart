@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, duplicate_ignore, use_build_context_synchronously
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, duplicate_ignore, use_build_context_synchronously, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -17,7 +17,7 @@ class UpdatePrograma extends StatefulWidget {
   final String nome;
   final String dtInicio;
   final String dtFim;
-  final bool status;
+  final String status;
 
   @override
   _UpdateProgramaState createState() => _UpdateProgramaState();
@@ -27,7 +27,7 @@ class _UpdateProgramaState extends State<UpdatePrograma> {
   final programatxt = TextEditingController();
   final dtIniciotxt = TextEditingController();
   final dtFimtxt = TextEditingController();
-  late bool? status;
+  late String status;
 
   final ProgramaService apiService = GetIt.I<ProgramaService>();
 
@@ -78,10 +78,10 @@ class _UpdateProgramaState extends State<UpdatePrograma> {
                   children: [
                     Text("Programa Finalizado?"),
                     Checkbox(
-                      value: status,
+                      value: status == '1',
                       onChanged: (bool? newValue) {
                         setState(() {
-                          status = newValue;
+                          status = newValue! ? 'ativo' : 'inativo';
                         });
                       },
                     ),
@@ -122,7 +122,7 @@ class _UpdateProgramaState extends State<UpdatePrograma> {
         programatxt.text,
         dtIniciotxt.text,
         dtFimtxt.text,
-        status!,
+        status,
       );
     } catch (e) {
       print('Erro ao atualizar o programa: $e');

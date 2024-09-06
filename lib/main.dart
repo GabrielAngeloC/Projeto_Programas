@@ -11,7 +11,7 @@ void setLocator() {
 }
 
 void main() async {
-  await dotenv.load(fileName: '.env');
+  await dotenv.load(fileName: 'assets/.env');
   setLocator();
   runApp(const MyApp());
 }
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Programas Demo',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
